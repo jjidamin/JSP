@@ -1,47 +1,61 @@
 function addCheck(){
-	if(frm.resvno.value.length==0){
-		alert("예약번호가 입력되지 않았습니다!");
-		frm.resvno.focus();
+	
+	if(frm.id.value.length==0){
+		alert("교과목코드가 입력되지 않았습니다.");
+		frm.id.focus();
 		return false;
 	}
-	else if(frm.empno.value.length==0){
-		alert("사원번호가 입력되지 않았습니다!");
-		frm.empno.focus();
+	
+	else if(frm.name.value.length==0){
+		alert("과목명이 입력되지 않았습니다.");
+		frm.name.focus();
 		return false;
 	}
-	else if(frm.resvdate.value.length==0){
-		alert("근무일자가 입력되지 않았습니다!");
-		frm.resvdate.focus();
+	
+	else if(frm.credit.value.length==0){
+		alert("학점이 입력되지 않았습니다.");
+		frm.credit.focus();
 		return false;
 	}
-	else if(frm.seatno.value.length==0){
-		alert("좌석번호가 입력되지 않았습니다!");
-		frm.seatno.focus();
+	
+	else if(frm.lecturer.value.length==0){
+		alert("담당강사가 선택되지 않았습니다.");
+		frm.lecturer.focus();
+		return false;
+	}
+	
+	else if(frm.week[0].checked==false && frm.week[1].checked==false && frm.week[2].checked==false &&frm.week[3].checked==false && frm.week[4].checked==false){
+		alert("요일이 선택되지 않았습니다.");
+		frm.week.focus();
+		return false;
+	}
+	
+	else if(frm.start_hour.value.length==0){
+		alert("시작시간이 입력되지 않았습니다.");
+		frm.start_hour.focus();
+		return false;
+	}
+	
+	else if(frm.end_hour.value.length==0){
+		alert("종료시간이 입력되지 않았습니다.");
+		frm.end_hour.focus();
 		return false;
 	}
 	
 	else
-	alert("좌석예약정보가 등록되었습니다!");
-	document.frm.submit();
-	return true;
-}
-
-function res(){
-	alert("정보를 지우고 처음부터 다시 입력합니다.");
-	document.frm.reset();
+		alert("교과목 등록이 완료 되었습니다!");
+		document.frm.submit();
+	    return true;
 }
 
 function search(){
-	if(frm2.empno.value.length==0){
-		alert("사원번호가 입력되지 않았습니다.");
-		frm2.empno.focus();
-		return false; 
-	}
-	else
-	document.frm2.submit();
-	return true;
+	window.location='list.jsp';
 }
-
-function home(){
-	window.location='index.jsp';
+function modify(){
+	alert("수정이 완료되었습니다!");
+	document.frm.submit();
+}
+function res(){
+	alert("교과목 수정이 취소되었습니다!");
+	document.frm.reset();
 }

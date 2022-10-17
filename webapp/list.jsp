@@ -1,5 +1,7 @@
+<%@page import="java.sql.*"%>
+<%@page import="DBPKG.Util"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,30 +9,92 @@
 <title>list</title>
 </head>
 <body>
-<script type="text/javascript" src="check.js"></script>
-<jsp:include page="header.jsp"></jsp:include>
+	<jsp:include page="header.jsp" />
+	<section
+		style="position: fixed; top: 70px; width: 100%; height: 100%; background: #D2D2FF">
+		<h2 style="text-align: center">
+			<b>교과목 목록 조회/수정</b>
+		</h2>
+		<br>
 
-<section style="position:fixed;top:60px;left:0px;width:100%;height:100%;background-color:lightgray;">
-<h2 style="text-align:center">좌석예약조회</h2>
-<form method="post" action="l_action.jsp" name="frm2" style="display:flex;align-items:center;justify-content:center; text-align:center">
-<table border="1">
+		<form
+			style="display: flex; align-items: center; justify-content: center; text-align: center">
+			<table border="1">
+				<tr>
+					<td>과목코드</td>
+					<td>과목명</td>
+					<td>학점</td>
+					<td>담당강사</td>
+					<td>요일</td>
+					<td>시작시간</td>
+					<td>종료시간</td>
+					<td>삭제</td>
+				</tr>
 
-<tr>
-<td>사원번호를 입력하시오.</td>
-<td><input type="text" name="empno"></td>
-</tr>
+				<%
+				request.setCharacterEncoding("UTF-8");
 
-<tr style="text-align:center">
-<td colspan="2">
-<input type="button" value="좌석예약조회" onclick="search()">
-<input type="button" value="홈으로" onclick="home()">
-</td>
-</tr>
+				try {
+					Connection conn = Util.getConnection(); //DB 연동
+					String sql = "SELECT id, co.name, credit, le.name, week, start_hour, end_hour "
+					+ "FROM course_tbl co, lecturer_tbl le " + "WHERE co.lecturer = le.idx " + "ORDER BY id";
+					PreparedStatement pstmt = conn.prepareStatement(sql); //sql 생성
+					ResultSet rs = pstmt.executeQuery();
 
-</table>
-</form>
-</section>
+					while (rs.next()) {
+						String week = rs.getString(5);
+						switch (week) {
+						case "1":	
+					week = "월요일";
+					break;
+						case "2":
+					week = "화요일";
+					break;
+						case "3":
+					week = "수요일";
+					break;
+						case "4":
+					week = "목요일";
+					break;
+						case "5":
+					week = "금요일";
+					break;
 
-<jsp:include page="footer.jsp"></jsp:include>
+						}
+
+						String start_hour = rs.getString(6);
+						while (start_hour.length() < 4) {
+					start_hour = "0" + start_hour;
+						}
+						String start = start_hour.substring(0, 2) + "시" + start_hour.substring(2, 4) + "분";
+						
+						String end_hour = rs.getString(7);
+						while (end_hour.length() < 4) {
+					end_hour = "0" + end_hour;
+						}
+						String end = end_hour.substring(0, 2) + "시" + end_hour.substring(2, 4) + "분";
+				%>
+				<tr>
+					<td><a href ="modify.jsp?id=<%=rs.getString(1)%>"><%=rs.getString(1) %></a></td>
+					<td><%=rs.getString(2) %></td>
+					<td><%=rs.getString(3) %></td>
+					<td><%=rs.getString(4) %></td>
+					<td><%=week %></td>
+					<td><%=start %></td>
+					<td><%=end %></td>
+					<td><a href="action.jsp?id=<%=rs.getString(1)%>&mode=delete">삭제</a></td>
+				</tr>
+				<%		
+				}
+
+				} catch (Exception e) {
+				e.printStackTrace();
+				}
+				%>
+
+			</table>
+		</form>
+	</section>
+	<jsp:include page="footer.jsp" />
 </body>
 </html>
