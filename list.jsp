@@ -1,113 +1,100 @@
-<%@page import="DBPKG.Util" %>
-<%@page import="java.sql.*" %>
+<%@page import="java.sql.*"%>
+<%@page import="DBPKG.Util"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@include file="header.jsp" %>
-<section style="position: fixed; top: 60px; width: 100%; height: 100%; background-color: lightgray;">
-<h2 style="text-align: center">고등학교 성적 조회프로그램</h2>
-<form style="display: flex; text-align: center; align-items: center; justify-content: center">
-<table border="1">
-<tr>
-	<td>학년</td>
-	<td>반</td>
-	<td>번호</td>
-	<td>성명</td>
-	<td>국어</td>
-	<td>영어</td>
-	<td>수학</td>
-	<td>역사</td>
-	<td>총점</td>
-	<td>평균</td>
-</tr>
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>list</title>
+</head>
+<body>
+	<jsp:include page="header.jsp" />
+	<section
+		style="position: fixed; top: 70px; width: 100%; height: 100%; background: #D2D2FF">
+		<h2 style="text-align: center">
+			<b>교과목 목록 조회/수정</b>
+		</h2>
+		<br>
 
-<%
-request.setCharacterEncoding("UTF-8");
+		<form
+			style="display: flex; align-items: center; justify-content: center; text-align: center">
+			<table border="1">
+				<tr>
+					<td>과목코드</td>
+					<td>과목명</td>
+					<td>학점</td>
+					<td>담당강사</td>
+					<td>요일</td>
+					<td>시작시간</td>
+					<td>종료시간</td>
+					<td>삭제</td>
+				</tr>
 
-Connection conn=Util.getConnection();
-String sql="select * from examtbl order by sNo";
-PreparedStatement ps = conn.prepareStatement(sql);
-ResultSet rs= ps.executeQuery();
-int korsum = 0;
-int koravg=0;
-int engsum=0;
-int engavg=0;
-int mathsum=0;
-int mathavg=0;
-int histsum=0;
-int histavg=0;
-int i=0;
-int sumsum=0;
-int avgsum=0;
-double avgavg=0;
-double sumavg=0;
-while(rs.next()){
-	String h=rs.getString(1);
-	String grade=h.substring(0,1);
-	String b=rs.getString(1);
-	String ban=b.substring(1,3);
-	String n=rs.getString(1);
-	String num=n.substring(3,5);
-	
-	int sum=rs.getInt(3)+rs.getInt(4)+rs.getInt(5)+rs.getInt(6);
-	double avg=sum/4;
-	
-	korsum+=rs.getInt(3);
-	engsum+=rs.getInt(4);
-	mathsum+=rs.getInt(5);
-	histsum+=rs.getInt(6);
-	sumsum+=sum;
-	avgsum+=avg;c
-	i++;
-	koravg = korsum/i;
-	engavg = engsum/i;
-	mathavg = mathsum/i;
-	histavg = histsum/i;
-	avgavg=avgsum/i;
-	sumavg=sumsum/i;
-%>
-<tr>
-<td><%= grade %></td>
-<td><%= ban %></td>
-<td><%= num %></td>
-<td><%= rs.getString(2) %></td>
-<td><%= rs.getString(3) %></td>
-<td><%= rs.getString(4) %></td>
-<td><%= rs.getString(5) %></td>
-<td><%= rs.getString(6) %></td>
-<td><%= sum %></td>
-<td><%= avg %></td>
-</tr>
-	<% 
-}
+				<%
+				request.setCharacterEncoding("UTF-8");
 
-%>
-<tr>
-<td>총점</td>
-<td></td>
-<td></td>
-<td></td>
-<td><%= korsum %></td>
-<td><%= engsum %></td>
-<td><%= mathsum %></td>
-<td><%= histsum %></td>
-<td><%=sumsum %></td>
-<td><%=avgsum %></td>
-</tr>
-<tr>
-<td>총평균</td>
-<td></td>
-<td></td>
-<td></td>
-<td><%= koravg%></td>
-<td><%= engavg%></td>
-<td><%= mathavg%></td>
-<td><%= histavg%></td>
-<td><%= sumavg%></td>
-<td><%= avgavg%></td>
-</tr>
-</table>
-</form>
+				try {
+					Connection conn = Util.getConnection(); //DB 연동
+					String sql = "SELECT id, co.name, credit, le.name, week, start_hour, end_hour "
+					+ "FROM course_tbl co, lecturer_tbl le " + "WHERE co.lecturer = le.idx " + "ORDER BY id";
+					PreparedStatement pstmt = conn.prepareStatement(sql); //sql 생성
+					ResultSet rs = pstmt.executeQuery();
 
-</section>
+					while (rs.next()) {
+						String week = rs.getString(5);
+						switch (week) {
+						case "1":	
+					week = "월요일";
+					break;
+						case "2":
+					week = "화요일";
+					break;
+						case "3":
+					week = "수요일";
+					break;
+						case "4":
+					week = "목요일";
+					break;
+						case "5":
+					week = "금요일";
+					break;
 
-<%@include file="footer.jsp" %>
+						}
+
+						String start_hour = rs.getString(6);
+						while (start_hour.length() < 4) {
+					start_hour = "0" + start_hour;
+						}
+						String start = start_hour.substring(0, 2) + "시" + start_hour.substring(2, 4) + "분";
+						
+						String end_hour = rs.getString(7);
+						while (end_hour.length() < 4) {
+					end_hour = "0" + end_hour;
+						}
+						String end = end_hour.substring(0, 2) + "시" + end_hour.substring(2, 4) + "분";
+				%>
+				<tr>
+					<td><a href ="modify.jsp?id=<%=rs.getString(1)%>"><%=rs.getString(1) %></a></td>
+					<td><%=rs.getString(2) %></td>
+					<td><%=rs.getString(3) %></td>
+					<td><%=rs.getString(4) %></td>
+					<td><%=week %></td>
+					<td><%=start %></td>
+					<td><%=end %></td>
+					<td><a href="action.jsp?id=<%=rs.getString(1)%>&mode=delete">삭제</a></td>
+				</tr>
+				<%		
+				}
+
+				} catch (Exception e) {
+				e.printStackTrace();
+				}
+				%>
+
+			</table>
+		</form>
+	</section>
+	<jsp:include page="footer.jsp" />
+</body>
+</html>
